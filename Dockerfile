@@ -10,18 +10,21 @@ WORKDIR /app
 # These three files are sufficient for all API endpoints.
 # For extended time ranges (13201 BC–17191 AD) or asteroid files,
 # see the Dropbox archive: https://www.astro.com/swisseph/swedownload_e.htm
-RUN apt-get update && apt-get install -y --no-install-recommends curl && \
-    curl -sLo /tmp/sepl_18.se1 https://raw.githubusercontent.com/aloistr/swisseph/master/ephe/sepl_18.se1 && \
-    curl -sLo /tmp/semo_18.se1 https://raw.githubusercontent.com/aloistr/swisseph/master/ephe/semo_18.se1 && \
-    curl -sLo /tmp/seas_18.se1 https://raw.githubusercontent.com/aloistr/swisseph/master/ephe/seas_18.se1 && \
-    mkdir -p /app/ephe && \
-    mv /tmp/sepl_18.se1 /tmp/semo_18.se1 /tmp/seas_18.se1 /app/ephe/ && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        curl \
+        build-essential \
+        python3-dev \
+        libffi-dev \
+    && curl -sLo /tmp/sepl_18.se1 https://raw.githubusercontent.com/aloistr/swisseph/master/ephe/sepl_18.se1 \
+    && curl -sLo /tmp/semo_18.se1 https://raw.githubusercontent.com/aloistr/swisseph/master/ephe/semo_18.se1 \
+    && curl -sLo /tmp/seas_18.se1 https://raw.githubusercontent.com/aloistr/swisseph/master/ephe/seas_18.se1 \
+    && mkdir -p /app/ephe \
+    && mv /tmp/sepl_18.se1 /tmp/semo_18.se1 /tmp/seas_18.se1 /app/ephe/ \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+COPY app ./app
 COPY pyproject.toml ./
-RUN pip install --no-cache-dir -e .
-
-COPY ./app ./app
+RUN pip install --no-cache-dir .
 
 EXPOSE 8000
 

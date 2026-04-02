@@ -2,7 +2,6 @@
 name = "swiss-ephemeris-api"
 version = "0.1.0"
 description = "REST API for Swiss Ephemeris astronomical calculations"
-readme = "README.md"
 license = {text = "AGPL-3.0-or-later"}
 authors = [{name = "Your Name", email = "you@example.com"}]
 requires-python = ">=3.12"
