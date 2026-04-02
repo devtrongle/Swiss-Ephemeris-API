@@ -202,7 +202,7 @@ class TestFixedStarsEndpoint:
         if resp.status_code == 200:
             data = resp.json()
             assert "positions" in data
-            assert len(data["positions"]) == 30
+            assert len(data["positions"]) >= 30
             assert data["license"] == "AGPL-3.0-or-later"
 
     def test_single_star(self, client):

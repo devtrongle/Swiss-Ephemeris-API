@@ -24,6 +24,7 @@ Base URL: `https://your-host.com` (or `http://localhost:8000` locally)
    - [POST /api/v1/lunar-phase](#38-post-apiv1lunar-phase)
    - [POST /api/v1/lunar-nodes](#39-post-apiv1lunar-nodes)
    - [POST /api/v1/special-points](#310-post-apiv1special-points)
+   - [POST /api/v1/aspects](#311-post-apiv1aspects)
 4. [Error Format](#4-error-format)
 
 ---
@@ -200,7 +201,8 @@ Calculate ecliptic positions for one or more planets.
   "latitude": 21.0285,
   "longitude": 105.8542,
   "planets": ["SUN", "MOON", "MERCURY", "VENUS", "MARS"],
-  "ayanamsa": "TROPICAL"
+  "ayanamsa": "TROPICAL",
+  "house_system": "P"
 }
 ```
 
@@ -212,6 +214,7 @@ Calculate ecliptic positions for one or more planets.
 | `longitude` | number | Yes | — | −180 to 180 degrees |
 | `planets` | string[] | No | all 16 | List of planet identifiers |
 | `ayanamsa` | string | No | `TROPICAL` | Sidereal ayanamsa |
+| `house_system` | string | No | `P` | House system character code |
 
 **Response**
 
@@ -607,6 +610,61 @@ Calculate Part of Fortune, Vertex, and Anti-Vertex.
   ]
 }
 ```
+
+---
+
+### 3.11 POST /api/v1/aspects
+
+Calculate astrological aspects between planets.
+
+**Request body**
+
+```json
+{
+  "datetime": "1990-01-15T12:00:00",
+  "timezone": "Asia/Ho_Chi_Minh",
+  "latitude": 21.0285,
+  "longitude": 105.8542,
+  "planets": ["SUN", "MOON", "MARS", "VENUS", "JUPITER", "SATURN"],
+  "include_minor": false
+}
+```
+
+| Field | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `datetime` | string | Yes | — | ISO 8601 datetime string |
+| `timezone` | string | Yes | — | IANA timezone name |
+| `latitude` | number | Yes | — | −90 to 90 degrees |
+| `longitude` | number | Yes | — | −180 to 180 degrees |
+| `planets` | string[] | No | all 14 | Planets to check |
+| `include_minor` | boolean | No | `false` | Include minor aspects |
+
+**Major aspects** (always included): CONJUNCTION, OPPOSITION, TRINE, SQUARE, SEXTILE.
+
+**Minor aspects** (when `include_minor=true`): SEMI_SEXTILE, SEMI_SQUARE, SESQUIQUADRATE, QUINTILE, BIQUINTILE, TREDEGILE.
+
+**Response**
+
+```json
+{
+  "license": "AGPL-3.0-or-later",
+  "request": { ... },
+  "julian_day_ut": 2447906.708333,
+  "aspects": [
+    {
+      "planet1": "SUN",
+      "planet2": "MOON",
+      "aspect_name": "TRINE",
+      "orb": 6.50,
+      "exactness": 1.50,
+      "planet1_longitude": 294.781269,
+      "planet2_longitude": 193.527811
+    }
+  ]
+}
+```
+
+> `orb` is positive when within orb width, decreasing toward 0 at exact. `exactness` = orb_width − diff.
 
 ---
 

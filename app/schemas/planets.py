@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from enum import Enum
-from app.schemas.common import BaseResponse
+from app.schemas.common import BaseResponse, HouseSystemEnum
 
 
 class PlanetEnum(str, Enum):
@@ -56,6 +56,10 @@ class PlanetRequest(BaseModel):
     ayanamsa: str = Field(
         default="TROPICAL",
         description="Ayanamsa (sidereal mode). Default: TROPICAL. Options: TROPICAL, LAHIRI, KRISHNAMURTI, etc.",
+    )
+    house_system: HouseSystemEnum = Field(
+        default=HouseSystemEnum.PLACIDUS,
+        description="House system for ascendant/MC calculation. Default: P (Placidus)",
     )
 
 

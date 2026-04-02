@@ -23,9 +23,12 @@ build/
 
 # Ephemeris files (large, download separately)
 ephe/*.se1
-ephe/*/*.se1
 ephe/*.txt
 ephe/swe_unix*.tar.gz
+
+# Asteroid files — committed to repo for Chiron/Ceres/Pallas/Juno/Vesta
+!ephe/ast0/*.se1
+!ephe/ast2/*.se1
 
 # Test artifacts
 .pytest_cache/

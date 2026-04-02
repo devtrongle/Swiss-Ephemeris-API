@@ -29,12 +29,17 @@ async def get_fixed_stars(req: FixedStarRequest) -> FixedStarResponse:
         raise HTTPException(status_code=422, detail=f"Invalid datetime/timezone: {e}")
 
     def _calc_stars() -> list[FixedStarPosition]:
+        # Cache magnitudes per star (fixstar_mag is a simple catalog lookup, no datetime needed)
+        _mag_cache: dict[str, float | None] = {}
+
         positions = []
         for star in star_names:
+            if star not in _mag_cache:
+                mag_raw = swe.fixstar_mag(star)
+                _mag_cache[star] = round(float(mag_raw[0]), 3) if mag_raw and mag_raw[0] != "" else None
             result = swe.fixstar(star, jd_ut, swe.FLG_SWIEPH)
             lon = result[0][0]
             lat = result[0][1]
-            mag = result[1] if len(result) > 1 else None
             sign, sign_num, deg_in_sign, *_ = degree_to_sign(lon)
             positions.append(FixedStarPosition(
                 star=star,
@@ -43,7 +48,7 @@ async def get_fixed_stars(req: FixedStarRequest) -> FixedStarResponse:
                 sign=sign,
                 sign_num=sign_num,
                 degree_in_sign=round(deg_in_sign, 6),
-                magnitude=round(mag, 3) if mag is not None else None,
+                magnitude=_mag_cache[star],
             ))
         return positions
 

@@ -19,7 +19,7 @@ FIXED_STARS = [
     ("Dubhe",      "Alpha Ursae Majoris"),
     ("Elnath",     "Beta Tauri"),
     ("Fomalhaut",  "Alpha Piscis Austrini"),
-    ("Hamul",      "Gamma Arietis"),
+    ("Hamal",      "Gamma Arietis"),
     ("Kaus Australis", "Epsilon Sagittarii"),
     ("Markab",     "Alpha Pegasi"),
     ("Menkar",     "Alpha Ceti"),

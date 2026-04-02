@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     host: str = "0.0.0.0"
     port: int = 8000
     cors_origins: str = "*"
+    log_level: str = "INFO"
 
     @property
     def cors_origins_list(self) -> list[str]:
