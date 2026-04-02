@@ -23,6 +23,7 @@ build/
 
 # Ephemeris files (large, download separately)
 ephe/*.se1
+ephe/*/*.se1
 ephe/*.txt
 ephe/swe_unix*.tar.gz
 

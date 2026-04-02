@@ -70,7 +70,7 @@ def create_app() -> FastAPI:
             return {
                 "status": "ok",
                 "ephe_path": settings.ephe_path,
-                "source": "https://github.com/<YOUR_USERNAME>/swiss-ephemeris-api",
+                "source": "https://github.com/devtrongle/swiss-ephemeris-api",
             }
         except Exception as e:
             raise HTTPException(status_code=503, detail=f"Swiss Ephemeris not available: {e}")
