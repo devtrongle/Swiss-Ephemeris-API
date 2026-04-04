@@ -61,8 +61,8 @@ def setup_logging() -> None:
         rotation=_ROTATION,
         retention=_RETENTION,
         compression=_COMPRESSION,
-        format="{time:YYYY-MM-DD HH:mm:ss.SSS} | {level: <8} | {name}:{function}:{line} | {message}",
-        enqueue=True,  # thread-safe for async
+        format="{time:YYYY-MM-DD HH:mm:ss.SSS} | {level: <8} | {name}:{function}:{line} | {message} | {extra}",
+        backtrace=True,
     )
 
     # Errors only → api-errors.log
@@ -72,8 +72,8 @@ def setup_logging() -> None:
         rotation=_ROTATION,
         retention=_RETENTION,
         compression=_COMPRESSION,
-        format="{time:YYYY-MM-DD HH:mm:ss.SSS} | {level: <8} | {name}:{function}:{line} | {message}",
-        enqueue=True,
+        format="{time:YYYY-MM-DD HH:mm:ss.SSS} | {level: <8} | {name}:{function}:{line} | {message} | {extra}",
+        backtrace=True,
     )
 
     # Silence uvicorn noise
