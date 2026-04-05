@@ -1,10 +1,11 @@
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
-    ephe_path: str = "./ephe"
+    ephe_path: str = Field(default="./ephe", validation_alias="EPHE_PATH")
     host: str = "0.0.0.0"
     port: int = 8000
     cors_origins: str = "*"
