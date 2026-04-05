@@ -75,6 +75,7 @@ def create_app() -> FastAPI:
         request_id = request.headers.get("x-request-id", str(uuid.uuid4()))
         request.state.request_id = request_id
         start = time.perf_counter()
+        response = None
         try:
             response = await call_next(request)
         finally:
@@ -84,7 +85,7 @@ def create_app() -> FastAPI:
                 request_id=request_id,
                 method=request.method,
                 path=request.url.path,
-                status=response.status_code,
+                status=response.status_code if response else "never_started",
                 elapsed_ms=elapsed_ms,
             )
         return response
