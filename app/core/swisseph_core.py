@@ -21,18 +21,23 @@ class HouseResult:
 class SwissEphemerisCore:
     """
     Thin, stateless wrapper around the swisseph C library.
-    ephe_path is set once at instantiation — not per-request.
     All swisseph calls are sync/blocking — must be called from a thread
     via asyncio.to_thread(), never directly from an async handler.
 
     Uses calc_ut (UT mode) throughout for consistency with the datetime_to_jd
     conversion that returns Julian Day UT.
+
+    IMPORTANT: swe.set_ephe_path() uses thread-local storage in the C library.
+    It must be called in every thread that performs calculations, not just the
+    main thread. _ensure_path() handles this transparently.
     """
 
     def __init__(self, ephe_path: str) -> None:
         self._ephe_path = ephe_path
-        # Note: swe.set_ephe_path() is called once in main.py lifespan, not here.
-        # SwissEphemerisCore holds no state beyond the ephe path.
+
+    def _ensure_path(self) -> None:
+        """Set the ephemeris path in the current thread (cheap C call, safe to repeat)."""
+        swe.set_ephe_path(self._ephe_path)
 
     def calc_planet(
         self,
@@ -45,6 +50,7 @@ class SwissEphemerisCore:
         Calculate planet position using UT (Julian Day UT input).
         If sidereal_ayanamsa is provided, FLG_SIDEREAL | sidereal_ayanamsa | FLG_SPEED is used.
         """
+        self._ensure_path()
         if sidereal_ayanamsa is not None:
             actual_flags = swe.FLG_SIDEREAL + sidereal_ayanamsa + swe.FLG_SPEED
         else:
@@ -70,6 +76,7 @@ class SwissEphemerisCore:
         Calculate special points (TRUE_NODE, MEAN_NODE, VERTEX, etc.)
         that require swe.calc_ut with FLG_SPEED.
         """
+        self._ensure_path()
         if sidereal_ayanamsa is not None:
             actual_flags = swe.FLG_SIDEREAL + sidereal_ayanamsa + swe.FLG_SPEED
         else:
@@ -98,6 +105,7 @@ class SwissEphemerisCore:
         FLG_SPEED is always included to capture the speed for retrograde detection.
         If sidereal_ayanamsa is provided, sidereal mode is used.
         """
+        self._ensure_path()
         if sidereal_ayanamsa is not None:
             actual_flags = swe.FLG_SIDEREAL + sidereal_ayanamsa + swe.FLG_SPEED
         else:
@@ -129,6 +137,7 @@ class SwissEphemerisCore:
         South Node = North Node + 180°.
         All speeds are negated for the South Node (it moves opposite).
         """
+        self._ensure_path()
         planet = swe.TRUE_NODE if true else swe.MEAN_NODE
         if sidereal_ayanamsa is not None:
             actual_flags = swe.FLG_SIDEREAL + sidereal_ayanamsa + swe.FLG_SPEED
@@ -161,6 +170,7 @@ class SwissEphemerisCore:
         hsys: str = "P",
     ) -> HouseResult:
         """Return house cusps and ascendant/MC (ascmc[0]=ASC, ascmc[1]=MC)."""
+        self._ensure_path()
         if isinstance(hsys, str):
             hsys = hsys.encode()
         raw_cusps, ascmc = swe.houses(jd_ut, latitude, longitude, hsys)
