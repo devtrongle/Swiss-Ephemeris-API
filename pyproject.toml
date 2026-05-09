@@ -21,6 +21,7 @@ dependencies = [
     "pydantic>=2.9.0",
     "pydantic-settings>=2.5.0",
     "python-dateutil>=2.9.0",
+    "tzdata>=2025.2",
     "pysweph>=2.10.3.6",
     "loguru>=0.7.0",
 ]

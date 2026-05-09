@@ -4,6 +4,22 @@ from dateutil import parser as dtparser
 import zoneinfo
 
 
+TIMEZONE_ALIASES = {
+    # Historical IANA links are not always available in minimal runtime images.
+    "Asia/Saigon": "Asia/Ho_Chi_Minh",
+    "Europe/Kiev": "Europe/Kyiv",
+}
+
+
+def get_timezone(tz_name: str) -> zoneinfo.ZoneInfo:
+    """Return a ZoneInfo, accepting common historical IANA aliases."""
+    canonical_name = TIMEZONE_ALIASES.get(tz_name, tz_name)
+    try:
+        return zoneinfo.ZoneInfo(canonical_name)
+    except Exception:
+        raise ValueError(f"Invalid timezone: {tz_name!r}") from None
+
+
 def datetime_to_jd(dt_utc: datetime) -> float:
     """
     Convert a timezone-aware (or naive UTC) datetime to Julian Day (UT).
@@ -31,10 +47,7 @@ def parse_iso_with_tz(datetime_str: str, tz_name: str) -> float:
     Raises ValueError if the timezone is invalid.
     """
     dt_naive = dtparser.parse(datetime_str)
-    try:
-        tz = zoneinfo.ZoneInfo(tz_name)
-    except Exception:
-        raise ValueError(f"Invalid timezone: {tz_name!r}")
+    tz = get_timezone(tz_name)
     dt_aware = dt_naive.replace(tzinfo=tz)
     return datetime_to_jd(dt_aware)
 

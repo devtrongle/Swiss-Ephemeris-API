@@ -17,6 +17,14 @@ class TestParseIsoWithTz:
         # HCMC is UTC+7, so JD should be slightly lower
         assert jd_hcmc < jd_utc
 
+    def test_historical_timezone_aliases(self):
+        assert parse_iso_with_tz("2020-01-15T12:00:00", "Asia/Saigon") == pytest.approx(
+            parse_iso_with_tz("2020-01-15T12:00:00", "Asia/Ho_Chi_Minh")
+        )
+        assert parse_iso_with_tz("2020-01-15T12:00:00", "Europe/Kiev") == pytest.approx(
+            parse_iso_with_tz("2020-01-15T12:00:00", "Europe/Kyiv")
+        )
+
     def test_invalid_timezone_raises(self):
         # Invalid timezone names now raise ValueError
         with pytest.raises(ValueError):

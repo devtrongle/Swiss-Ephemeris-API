@@ -126,3 +126,14 @@ class TestPlanetsValidation:
         }
         resp = client.post("/api/v1/planets", json=payload)
         assert resp.status_code == 422
+
+    @pytest.mark.skipif(not EPHE_AVAILABLE, reason="Ephemeris files not found")
+    def test_historical_timezone_alias_accepted(self, client):
+        payload = {
+            "datetime": "1990-01-15T12:00:00",
+            "timezone": "Asia/Saigon",
+            "latitude": 21.0285,
+            "longitude": 105.8542,
+        }
+        resp = client.post("/api/v1/planets", json=payload)
+        assert resp.status_code == 200
